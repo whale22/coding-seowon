@@ -2,6 +2,7 @@ package com.seowon.coding.dto;
 
 import com.seowon.coding.domain.model.Order;
 import com.seowon.coding.domain.model.OrderItem;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;

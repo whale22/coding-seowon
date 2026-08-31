@@ -2,6 +2,7 @@ package com.seowon.coding.controller;
 
 import com.seowon.coding.domain.model.Order;
 import com.seowon.coding.domain.model.OrderItem;
+import com.seowon.coding.dto.OrderDto;
 import com.seowon.coding.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,16 +51,6 @@ public class OrderController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order){
-        Order newOrder = orderService.placeOrder(order.getCustomerName(), order.getCustomerEmail(), order.getItems().stream().map(OrderItem::getId).toList(), order.getItems().stream().map(OrderItem::getQuantity).toList());
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(order.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(order);
-    }
     
     /**
      * TODO #2: 주문을 생성하는 API 구현
@@ -80,4 +71,21 @@ public class OrderController {
      * }
      */
     //
+    @PostMapping
+    public ResponseEntity<OrderDto> createOrder(@RequestBody Order order){
+        Order newOrder = orderService.placeOrder(order.getCustomerName(), order.getCustomerEmail(), order.getItems().stream().map(OrderItem::getId).toList(), order.getItems().stream().map(OrderItem::getQuantity).toList());
+        OrderDto orderDto = OrderDto.builder()
+                .customerName(newOrder.getCustomerName())
+                .customerEmail(newOrder.getCustomerEmail())
+                .items(newOrder.getItems())
+                .orderDate(newOrder.getOrderDate())
+                .totalAmount(newOrder.getTotalAmount())
+                .build();
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(order.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(orderDto);
+    }
 }
