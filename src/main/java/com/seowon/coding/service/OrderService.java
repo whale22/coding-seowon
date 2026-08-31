@@ -1,5 +1,6 @@
 package com.seowon.coding.service;
 
+import com.seowon.coding.domain.event.OrderCreatedEvent;
 import com.seowon.coding.domain.model.Order;
 import com.seowon.coding.domain.model.OrderItem;
 import com.seowon.coding.domain.model.ProcessingStatus;
@@ -29,7 +30,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final ProcessingStatusRepository processingStatusRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
@@ -247,7 +248,10 @@ public class OrderService {
      * - 방법: 주문 저장 후 ApplicationEventPublisher 를 통해 OrderCreatedEvent 를 발행하세요.
      * - 구현: InventoryEventListener 에서 이벤트를 구독하여 재고를 처리하도록 수정합니다.
      */
+
     public Order placeOrderWithEvent(String customerName, String customerEmail, List<Long> productIds, List<Integer> quantities) {
+
+
         // 1. 주문 엔티티 생성 및 저장
         Order order = Order.builder()
                 .customerName(customerName)
@@ -261,6 +265,7 @@ public class OrderService {
         // 2. 주문 상품(OrderItem) 생성 로직...
         Order savedOrder = orderRepository.save(order);
 
+        publisher.publishEvent(new OrderCreatedEvent(productIds, quantities));
 
         return savedOrder;
     }
