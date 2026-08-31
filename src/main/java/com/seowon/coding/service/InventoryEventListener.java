@@ -22,7 +22,7 @@ public class InventoryEventListener {
      */
 
     @TransactionalEventListener
-    public boolean handleOrderCreatedEvent(OrderCreatedEvent event) throws Exception {
+    public void handleOrderCreatedEvent(OrderCreatedEvent event) throws Exception {
         Exception RuntimeException = new RuntimeException();
         Product product;
         for(int i=0;i<event.getProductIds().size();i++){
