@@ -68,19 +68,34 @@ public class OrderService {
      * 각 Product 의 재고를 수정 (변경 감지로 자동 반영)
      * placeOrder 메소드의 시그니처는 변경하지 않은 채 구현하세요.
      */
-    public OrderDto placeOrder(OrderDto orderDto){
-        return OrderDto.builder()
-                .customerName(orderDto.getCustomerName())
-                .customerEmail(orderDto.getCustomerEmail())
-                .status(orderDto.getStatus())
-                .orderDate(LocalDateTime.now())
-                .items(orderDto.getItems())
-                .totalAmount(orderDto.getTotalAmount())
-                .build();
-    }
-
     public Order placeOrder(String customerName, String customerEmail, List<Long> productIds, List<Integer> quantities) {
-        return null;
+        Order newOrder;
+        List<OrderItem> items = new ArrayList<>();
+        int totalAmount = 0;
+        for(int i=0;i<productIds.size();i++){
+            OrderItem newItem = new OrderItem();
+            Product newProduct = productRepository.findById(productIds.get(i)).get();
+
+            newItem = OrderItem.builder()
+                    .product(newProduct)
+                    .quantity(quantities.get(i))
+                    .price(newProduct.getPrice())
+                    .build();
+
+            totalAmount += quantities.get(i);
+        }
+        newOrder = Order.builder()
+                .customerName(customerName)
+                .customerEmail(customerEmail)
+                .status(Order.OrderStatus.PENDING)
+                .orderDate(LocalDateTime.now())
+                .items(items)
+                .totalAmount(BigDecimal.valueOf(totalAmount))
+                .build();
+
+        orderRepository.save(newOrder);
+
+        return newOrder;
     }
 
     /**
