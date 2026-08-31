@@ -130,24 +130,8 @@ public class OrderService {
             Long pid = req.getProductId();
             int qty = req.getQuantity();
 
-            Product product = productRepository.findById(pid)
-                    .orElseThrow(() -> new IllegalArgumentException("Product not found: " + pid));
-            if (qty <= 0) {
-                throw new IllegalArgumentException("quantity must be positive: " + qty);
-            }
-            if (product.getStockQuantity() < qty) {
-                throw new IllegalStateException("insufficient stock for product " + pid);
-            }
+            Product product = findProduct(pid, qty);
 
-            OrderItem item = OrderItem.builder()
-                    .order(order)
-                    .product(product)
-                    .quantity(qty)
-                    .price(product.getPrice())
-                    .build();
-            order.getItems().add(item);
-
-            product.decreaseStock(qty);
             subtotal = subtotal.add(product.getPrice().multiply(BigDecimal.valueOf(qty)));
         }
 
@@ -157,6 +141,32 @@ public class OrderService {
         order.setTotalAmount(subtotal.add(shipping).subtract(discount));
         order.setStatus(Order.OrderStatus.PROCESSING);
         return orderRepository.save(order);
+    }
+
+    public Product findProduct(Long pid, int qty){
+        Product product = productRepository.findById(pid)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found: " + pid));
+        if (qty <= 0) {
+            throw new IllegalArgumentException("quantity must be positive: " + qty);
+        }
+        if (product.getStockQuantity() < qty) {
+            throw new IllegalStateException("insufficient stock for product " + pid);
+        }
+
+        return product;
+    }
+
+    public OrderItem findOrder(Order order, Product product, int qty){
+        OrderItem item = OrderItem.builder()
+                .order(order)
+                .product(product)
+                .quantity(qty)
+                .price(product.getPrice())
+                .build();
+        order.getItems().add(item);
+        product.decreaseStock(qty);
+
+        return item;
     }
 
     /**
