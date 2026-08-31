@@ -7,6 +7,7 @@ import com.seowon.coding.domain.model.Product;
 import com.seowon.coding.domain.repository.OrderRepository;
 import com.seowon.coding.domain.repository.ProcessingStatusRepository;
 import com.seowon.coding.domain.repository.ProductRepository;
+import com.seowon.coding.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -67,8 +68,15 @@ public class OrderService {
      * 각 Product 의 재고를 수정 (변경 감지로 자동 반영)
      * placeOrder 메소드의 시그니처는 변경하지 않은 채 구현하세요.
      */
-    public Optinal<OrderDto> createOrder(OrderDto orderDto){
-
+    public OrderDto placeOrder(OrderDto orderDto){
+        return OrderDto.builder()
+                .customerName(orderDto.getCustomerName())
+                .customerEmail(orderDto.getCustomerEmail())
+                .status(orderDto.getStatus())
+                .orderDate(LocalDateTime.now())
+                .items(orderDto.getItems())
+                .totalAmount(orderDto.getTotalAmount())
+                .build();
     }
 
     public Order placeOrder(String customerName, String customerEmail, List<Long> productIds, List<Integer> quantities) {
