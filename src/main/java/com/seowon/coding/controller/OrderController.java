@@ -47,6 +47,12 @@ public class OrderController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping
+    public ResponseEntity<Order> createOrder(@RequestBody OrderDto orderDto){
+        OrderDto newOrder = orderService.placeOrder(orderDto.);
+        return ResponseEntity.created().body(newOrder);
+    }
     
     /**
      * TODO #2: 주문을 생성하는 API 구현

@@ -67,6 +67,10 @@ public class OrderService {
      * 각 Product 의 재고를 수정 (변경 감지로 자동 반영)
      * placeOrder 메소드의 시그니처는 변경하지 않은 채 구현하세요.
      */
+    public Optinal<OrderDto> createOrder(OrderDto orderDto){
+
+    }
+
     public Order placeOrder(String customerName, String customerEmail, List<Long> productIds, List<Integer> quantities) {
         return null;
     }

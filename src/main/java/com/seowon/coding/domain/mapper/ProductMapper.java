@@ -30,6 +30,7 @@ public interface ProductMapper {
 
     boolean existsById(@Param("id") Long id);
 
+    List<Product> findByCategory(@Param("category") String category);
     // TODO #1: 카테고리로 제품 조회
     //   List<Product> findByCategory(@Param("category") String category);
     //
