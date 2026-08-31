@@ -1,12 +1,15 @@
 package com.seowon.coding.controller;
 
 import com.seowon.coding.domain.model.Order;
+import com.seowon.coding.domain.model.OrderItem;
 import com.seowon.coding.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -49,9 +52,13 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody OrderDto orderDto){
-        OrderDto newOrder = orderService.placeOrder(orderDto.);
-        return ResponseEntity.created().body(newOrder);
+    public ResponseEntity<Order> createOrder(@RequestBody Order order){
+        Order newOrder = orderService.placeOrder(order.getCustomerName(), order.getCustomerEmail(), order.getItems().stream().map(OrderItem::getId).toList(), order.getItems().stream().map(OrderItem::getQuantity).toList());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(order.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(order);
     }
     
     /**
